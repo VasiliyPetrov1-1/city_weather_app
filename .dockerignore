@@ -1,0 +1,17 @@
+.git
+.github
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.tmp
+*.swp
+*.swo
+tests/
+.vscode/
+.idea/
+*.iml
+

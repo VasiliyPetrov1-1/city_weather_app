@@ -1,0 +1,10 @@
+venv/
+env/
+.venv/
+.cache
+.pytest_cache/
+.vscode/
+.idea/
+.env
+
+

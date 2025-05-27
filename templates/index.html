@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+    async function fetchSuggestions(query) {
+        if (!query) return [];
+        const response = await fetch(`/autocomplete?city=` + encodeURIComponent(query));
+        if (!response.ok) return [];
+        const suggestions = await response.json();
+        return suggestions;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const input = document.querySelector('input[name="city"]');
+        const list = document.createElement("ul");
+        list.style.border = "1px solid #ccc";
+        list.style.maxHeight = "150px";
+        list.style.overflowY = "auto";
+        list.style.position = "absolute";
+        list.style.background = "white";
+        list.style.width = input.offsetWidth + "px";
+        list.style.marginTop = "0";
+        list.style.paddingLeft = "0";
+        list.style.listStyleType = "none";
+        list.style.zIndex = "1000";
+        list.style.display = "none";
+
+        input.parentNode.appendChild(list);
+
+        input.addEventListener("input", async () => {
+            const query = input.value;
+            const suggestions = await fetchSuggestions(query);
+            list.innerHTML = "";
+            if (suggestions.length === 0) {
+                list.style.display = "none";
+                return;
+            }
+            for (const suggestion of suggestions) {
+                const item = document.createElement("li");
+                item.textContent = suggestion;
+                item.style.padding = "5px";
+                item.style.cursor = "pointer";
+                item.addEventListener("click", () => {
+                    input.value = suggestion;
+                    list.style.display = "none";
+                });
+                list.appendChild(item);
+            }
+            list.style.display = "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            if (e.target !== input && e.target.parentNode !== list) {
+                list.style.display = "none";
+            }
+        });
+    });
+    </script>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <style>
+        body { font-family: sans-serif; padding: 2em; background: #f0f0f0; }
+        .container { background: #fff; padding: 2em; border-radius: 8px; max-width: 600px; margin: auto; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Weather Forecast</h1>
+    {% if last_city %}
+    <div style="margin-bottom: 1em; padding: 1em; background: #e0f7fa; border-radius: 5px;">
+        <p>Welcome back! Would you like to see the weather for <strong>{{ last_city }}</strong> again?</p>
+        <form method="get" action="/weather" style="display:inline;">
+            <input type="hidden" name="city" value="{{ last_city }}">
+            <button type="submit">Show</button>
+        </form>
+    </div>
+    {% endif %}
+    <form method="get" action="/weather">
+        <input type="text" name="city" placeholder="Enter city" required>
+        <button type="submit">Get Weather</button>
+    </form>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    {% if forecast %}
+    <h2>7-Day Forecast for {{ city }}</h2>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Date</th>
+            <th>Min Temp (°C)</th>
+            <th>Max Temp (°C)</th>
+        </tr>
+        {% for i in range(forecast.time|length) %}
+        <tr>
+            <td>{{ forecast.time[i] }}</td>
+            <td>{{ forecast.temperature_2m_min[i] }}</td>
+            <td>{{ forecast.temperature_2m_max[i] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <div style="margin-top: 2em;">
+        <form action="/user_history" method="get" style="display: inline;">
+            <button type="submit">My history</button>
+        </form>
+        <form action="/stats" method="get" style="display: inline; margin-left: 1em;">
+            <button type="submit">Stats</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

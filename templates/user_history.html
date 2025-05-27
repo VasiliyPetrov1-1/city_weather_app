@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Search History</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f0f0; padding: 2em; }
+        .container { background: white; padding: 2em; border-radius: 8px; max-width: 600px; margin: auto; }
+        ul { padding-left: 1.5em; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>My Search History</h1>
+
+    {% if history %}
+        <ul>
+            {% for city in history %}
+                <li>{{ city }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't searched for any cities yet.</p>
+    {% endif %}
+
+    <p><a href="/">← Back to Home</a></p>
+</div>
+</body>
+</html>
